@@ -84,6 +84,63 @@ class testLeafNode(unittest.TestCase):
         self.assertEqual(node.to_html(), "Hello, world!")
 
 
+class TestParentNode(unittest.TestCase):
+    def test_to_html_classic(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+            )       
+        self.assertEqual(
+            node.to_html(),
+            "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        )
+
+    def test_to_html_no_tag(self):
+        node = ParentNode(
+            None,
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+            )       
+        with self.assertRaises(ValueError):
+            node.to_html()
+
+    def test_to_html_no_child(self):
+        node = ParentNode(
+            "p",
+            None,
+            )       
+        with self.assertRaises(ValueError):
+            node.to_html()
+
+    def test_to_html_nested_parents(self):
+        node = ParentNode(
+            "p",
+            [
+                ParentNode("b", 
+                           [
+                    LeafNode("h1", "title text"), 
+                    LeafNode(None, "Normal text")
+                    ],
+                    ),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+            )       
+        self.assertEqual(
+            node.to_html(),
+            "<p><b><h1>title text</h1>Normal text</b>Normal text<i>italic text</i>Normal text</p>"
+        )
+    
 
 
 if __name__ == "__main__":
