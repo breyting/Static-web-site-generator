@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import *
-from split_nodes import *
+from inline_markdown import *
 
 class Test_split_nodes_delimiter(unittest.TestCase):
     def test_delimiter_code(self):
@@ -111,4 +111,34 @@ class Test_split_nodes_delimiter(unittest.TestCase):
                 TextNode(" word", TextType.NORMAL),
             ],
             new_nodes,
+        )
+
+
+class Test_extract_markdown(unittest.TestCase):
+    def test_extract_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertEqual(
+        extract_markdown_images(text),
+        [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        )
+
+    def test_extract_images_with_links(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and [obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertEqual(
+        extract_markdown_images(text),
+        [("rick roll", "https://i.imgur.com/aKaOqIh.gif")]
+        )
+
+    def test_extract_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        self.assertEqual(
+            extract_markdown_links(text),
+            [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        )
+
+    def test_extract_links_with_image(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)"
+        self.assertEqual(
+            extract_markdown_links(text),
+            [("to boot dev", "https://www.boot.dev")]
         )
