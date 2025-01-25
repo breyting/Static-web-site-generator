@@ -88,11 +88,11 @@ def split_nodes_link(old_nodes):
             if len(sections) != 2:
                 raise ValueError("Invalid markdown, link section not closed")
             if sections[0] != "":
-                new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                new_nodes.append(TextNode(sections[0], TextType.NORMAL))
             new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
             original_text = sections[1]
         if original_text != "":
-            new_nodes.append(TextNode(original_text, TextType.TEXT))   
+            new_nodes.append(TextNode(original_text, TextType.NORMAL))   
     return new_nodes 
 
 
@@ -100,14 +100,18 @@ def text_to_textnodes(text):
     old_node = TextNode(text, TextType.NORMAL)
 
     code_node = split_nodes_delimiter([old_node], "`", TextType.CODE)
-    print(f"code_node : {code_node}")
     bold_node = split_nodes_delimiter(code_node, "**", TextType.BOLD)
-    print(f"bold_node : {bold_node}")
     italic_node = split_nodes_delimiter(bold_node, "*", TextType.ITALIC)
-    print(f"italic_node : {italic_node}")
     image_node = split_nodes_image(italic_node)
-    print(f"image_node : {image_node}")
     link_node = split_nodes_link(image_node)
-    print(f"link_node : {link_node}")
     return link_node
+
+def markdown_to_blocks(markdown):
+    blocks = []
+    split_markdown = markdown.split("\n\n")
+    for block in split_markdown:
+        if block == "":
+            continue
+        blocks.append(block.strip())
+    return blocks
 
