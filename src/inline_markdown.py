@@ -37,3 +37,66 @@ def extract_markdown_links(text):
     return links
 
 
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.NORMAL:
+            new_nodes.append(old_node)
+            continue
+
+        split_node = []
+        images = extract_markdown_images(old_node.text)
+
+        regex = r"\!\[(.*?)\)"
+        split_text = re.split(regex, old_node.text)
+
+        if len(images) == 0:
+            new_nodes.append(old_node)
+            continue
+        
+        image_number = 0
+        for element in split_text:
+            if element == "":
+                continue
+            if "](" in element:
+                split_node.append(TextNode(images[image_number][0], TextType.IMAGE, images[image_number][1]))
+                image_number += 1
+            else:
+                split_node.append(TextNode(element, TextType.NORMAL))
+
+        new_nodes.extend(split_node)        
+    return new_nodes 
+
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.NORMAL:
+            new_nodes.append(old_node)
+            continue
+
+        split_node = []
+        links = extract_markdown_links(old_node.text)
+
+        regex = r"[^\!]\[(.*?)\)"
+        split_text = re.split(regex, old_node.text)
+
+        if len(links) == 0:
+            new_nodes.append(old_node)
+            continue
+        
+        link_number = 0
+        for element in split_text:
+            if element == "":
+                continue
+            if "](" in element:
+                split_node.append(TextNode(links[link_number][0], TextType.LINK, links[link_number][1]))
+                link_number += 1
+            else:
+                if element == split_text[-1]:
+                    split_node.append(TextNode(element, TextType.NORMAL))
+                else:
+                    split_node.append(TextNode(element + " ", TextType.NORMAL))
+        new_nodes.extend(split_node)        
+    return new_nodes 
