@@ -79,3 +79,15 @@ This is the same paragraph on a new line
         block = "paragraph"
         self.assertEqual(block_to_block_type(block), block_type_paragraph)
 
+class test_markdown_to_html_node(unittest.TestCase):
+    def test_headings(self):
+        markdown = "# heading 1\n\n## heading 2\n\n### heading 3\n\n#### heading 4"
+        test = markdown_to_html_node(markdown)
+        result = ParentNode("div",
+                            [
+                                LeafNode("h1", "heading 1"),
+                                LeafNode("h2", "heading 2"),
+                                LeafNode("h3", "heading 3"),
+                                LeafNode("h4", "heading 4")
+                            ])
+        self.assertEqual(test, result)
